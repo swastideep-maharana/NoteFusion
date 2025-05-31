@@ -1,69 +1,60 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
+import { NextResponse } from "next/server";
 
-export const POST = async (req: Request) => {
-  const body = await req.json();
-  const { username, password, email } = body;
+export const runtime = "nodejs";
 
+export async function POST(req: Request) {
   try {
-    // Check if user exists
+    const { username, password, email } = await req.json();
+
+    // Input validation
+    if (!username || !password || !email) {
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check for existing user
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-          { username },
-          { email }
-        ]
-      }
+        OR: [{ username }, { email }],
+      },
     });
 
     if (existingUser) {
-      return Response.json(
+      const isDuplicateEmail = existingUser.email === email;
+      return NextResponse.json(
         {
-          success: false,
-          message: "User already exists",
-          status: 409,
+          message: `An account with this ${
+            isDuplicateEmail ? "email" : "username"
+          } already exists`,
         },
         { status: 409 }
       );
     }
 
-    // Hash password and create verification code
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const verificationCode = crypto.randomInt(0, 999999).toString();
-    const hashedVerificationCode = await bcrypt.hash(verificationCode, 12);
-
-    /*
-    TODO: Send verification email
-    */
-
     // Create new user
-    const newUser = await prisma.user.create({
+    const hashedPassword = await bcrypt.hash(password, 12);
+    await prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
-        verificationCode: hashedVerificationCode,
+        provider: "credentials",
       },
     });
 
-    return Response.json(
-      {
-        message: "User created successfully",
-        success: true,
-        status: 201,
-      },
+    return NextResponse.json(
+      { message: "Account created successfully" },
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
-    return Response.json(
-      {
-        message: "Internal server error when creating user",
-        success: false,
-        status: 500,
-      },
+    console.error("Signup error:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
       { status: 500 }
     );
   }
-};
+}

@@ -1,38 +1,70 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleSignUp(e: React.FormEvent) {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
+    setLoading(true);
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: name, email, password }),
-    });
-  }
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 409) {
+        setError(data.message);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create account");
+      }
+
+      // On success, redirect to login
+      router.push("/auth/signin?success=Account created successfully");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={{ maxWidth: 400, margin: "auto", padding: 20 }}>
-      <h1>Sign Up</h1>
+    <div className="max-w-md mx-auto mt-10 p-6">
+      <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
+      {error && (
+        <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSignUp}>
         <div>
           <label>Name</label>
           <input
             type="text"
             required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
             autoComplete="name"
           />
         </div>
@@ -42,8 +74,10 @@ export default function SignUpPage() {
           <input
             type="email"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             autoComplete="email"
           />
         </div>
@@ -53,17 +87,21 @@ export default function SignUpPage() {
           <input
             type="password"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
             autoComplete="new-password"
           />
         </div>
 
-        {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
-        {success && <p style={{ color: "green", marginTop: 10 }}>{success}</p>}
-
-        <button type="submit" style={{ marginTop: 20 }}>
-          Register
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-black text-white p-3 rounded-md hover:bg-gray-800 disabled:opacity-50"
+          style={{ marginTop: 20 }}
+        >
+          {loading ? "Creating Account..." : "Sign Up"}
         </button>
       </form>
     </div>
