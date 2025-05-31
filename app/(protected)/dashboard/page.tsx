@@ -1,19 +1,17 @@
-"use client";
+"use client"
 
-import { useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from 'next-auth/react';
+import React from 'react'
 
-export default function Dashboard() {
-  const { data: session, status } = useSession({ required: true });
+const page = () => {
+    const { data } = useSession();
+    return (
+        <div>
+            <h2>Welcome, {data?.user?.email || data?.user.name}</h2>
+            <button onClick={() => signOut()}>Sign Out</button>
+        </div>
+    );
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div style={{ maxWidth: 600, margin: "auto", padding: 20 }}>
-      <h1>Dashboard</h1>
-      <p>Welcome, {session?.user?.name || session?.user?.email}!</p>
-      <button onClick={() => signOut()}>Sign Out</button>
-    </div>
-  );
 }
+
+export default page

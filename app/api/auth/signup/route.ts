@@ -1,49 +1,51 @@
-import dbConnect from "@/lib/mongodb";
-import UserModel from "@/models/user.model";
-import bcrypt from "bcrypt";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 export const POST = async (req: Request) => {
   const body = await req.json();
   const { username, password, email } = body;
 
-  await dbConnect();
   try {
-    const exisitingUser = await UserModel.findOne({
-      $or: [{ username }, { email }],
+    // Check if user exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { username },
+          { email }
+        ]
+      }
     });
 
-    if (exisitingUser) {
+    if (existingUser) {
       return Response.json(
         {
           success: false,
-          message: "User already exisits",
+          message: "User already exists",
           status: 409,
         },
         { status: 409 }
       );
     }
 
-    console.log(username, password, email);
-
+    // Hash password and create verification code
     const hashedPassword = await bcrypt.hash(password, 12);
-    const verificationCode = crypto.randomInt(0, 999999);
+    const verificationCode = crypto.randomInt(0, 999999).toString();
+    const hashedVerificationCode = await bcrypt.hash(verificationCode, 12);
+
     /*
-  TODO: Send verification email
-  */
-    const hashedVerificationCode = await bcrypt.hash(
-      verificationCode.toString(),
-      12
-    );
+    TODO: Send verification email
+    */
 
-    const newUser = await UserModel.create({
-      username,
-      email,
-      password: hashedPassword,
-      verificationCode: hashedVerificationCode,
+    // Create new user
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+        verificationCode: hashedVerificationCode,
+      },
     });
-
-    console.log(username, hashedPassword, email, hashedVerificationCode);
 
     return Response.json(
       {
@@ -58,7 +60,7 @@ export const POST = async (req: Request) => {
     return Response.json(
       {
         message: "Internal server error when creating user",
-        success: true,
+        success: false,
         status: 500,
       },
       { status: 500 }

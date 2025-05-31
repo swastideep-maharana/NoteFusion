@@ -1,25 +1,14 @@
-// app/(auth)/sign-in/page.tsx or pages/signin.tsx
-
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInPage() {
-  const { data: session } = useSession();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  if (session) {
-    return (
-      <div>
-        <h2>Welcome, {session.user?.name || session.user?.email}</h2>
-        <button onClick={() => signOut()}>Sign Out</button>
-      </div>
-    );
-  }
 
   async function handleCredentialsSignIn(e: React.FormEvent) {
     e.preventDefault();
@@ -32,6 +21,7 @@ export default function SignInPage() {
     if (res?.error) {
       setError(res.error);
     }
+    redirect("/dashboard")
   }
 
   return (

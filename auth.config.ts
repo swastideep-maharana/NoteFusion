@@ -1,8 +1,8 @@
+import { prisma } from "@/lib/prisma";
+import bcryptjs from "bcryptjs";
+import NextAuth from "next-auth";
 import GitHub from "@auth/core/providers/github";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-import UserModel from "./models/user.model";
-import NextAuth from "next-auth";
 
 declare module "next-auth" {
   interface Session {
@@ -23,27 +23,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       name: "Credentials",
       credentials: {
-        identifier: { label: "Identifier", type: "text" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         try {
-          const identifier = credentials?.identifier as string;
-          const password = credentials?.password as string;
-          const user = await UserModel.findOne({ identifier });
-          if (!user) {
-            throw new Error("No user found for details entered");
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Missing credentials");
           }
 
-          const isValid = await bcrypt.compare(password, user.password);
-          if (!isValid) {
-            throw new Error("Invalid credentials");
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email as string,
+            },
+          });
+
+          if (!user || !user.password) {
+            throw new Error("No user found");
+          }
+
+          const isPasswordValid = await bcryptjs.compare(
+            credentials.password as string,
+            user.password
+          );
+
+          if (!isPasswordValid) {
+            throw new Error("Invalid password");
           }
 
           return {
-            id: user._id.toString(),
+            id: user.id,
             email: user.email,
-            name: user.name,
+            name: user.username,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -52,13 +63,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-    updateAge: 24 * 60 * 60,
-  },
   pages: {
     signIn: "/login",
+  },
+  session: {
+    strategy: "jwt",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -71,9 +80,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = typeof token.id === "string" ? token.id : "";
-        session.user.email = token.email ?? "";
-        session.user.name = token.name;
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
       }
       return session;
     },
