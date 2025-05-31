@@ -24,6 +24,8 @@ export const POST = async (req: Request) => {
       );
     }
 
+    console.log(username, password, email);
+
     const hashedPassword = await bcrypt.hash(password, 12);
     const verificationCode = crypto.randomInt(0, 999999);
     /*
@@ -41,7 +43,7 @@ export const POST = async (req: Request) => {
       verificationCode: hashedVerificationCode,
     });
 
-    console.log(newUser);
+    console.log(username, hashedPassword, email, hashedVerificationCode);
 
     return Response.json(
       {

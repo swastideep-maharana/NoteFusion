@@ -1,41 +1,25 @@
 import mongoose from "mongoose";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("Please add your Mongo URI to .env.local");
-}
-
-const MONGODB_URI = process.env.MONGODB_URI;
-
-interface Connection {
+type ConnectionObject = {
   isConnected?: number;
-}
+};
 
-const connection: Connection = {};
+const connection: ConnectionObject = {};
 
 async function dbConnect(): Promise<void> {
   if (connection.isConnected) {
+    console.log("already connected to db");
     return;
   }
-
   try {
-    const db = await mongoose.connect(MONGODB_URI, {
+    const dbCon = await mongoose.connect(process.env.MONGODB_URI || "", {
       dbName: "NoteFusion",
     });
-
-    connection.isConnected = db.connections[0].readyState;
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("MongoDB connected successfully");
-    }
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    process.exit(1);
+    connection.isConnected = dbCon.connections[0].readyState;
+    console.log("DB connected succesfully");
+  } catch (err) {
+    console.log(err, "DB Connection Faied");
   }
-}
-
-// For development environment: Handle connection hot reloading
-if (process.env.NODE_ENV === "development") {
-  mongoose.set("debug", true);
 }
 
 export default dbConnect;

@@ -15,23 +15,11 @@ export default function SignUpPage() {
     setError("");
     setSuccess("");
 
-    const res = await fetch("/api/register", {
+    const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ username: name, email, password }),
     });
-
-    if (res.ok) {
-      setSuccess("Registered successfully! You can now log in.");
-      setName("");
-      setEmail("");
-      setPassword("");
-      // Optionally, auto sign in:
-      // await signIn("credentials", { email, password });
-    } else {
-      const data = await res.json();
-      setError(data.error || "Registration failed");
-    }
   }
 
   return (

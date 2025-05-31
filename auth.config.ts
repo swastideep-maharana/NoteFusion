@@ -1,13 +1,8 @@
-// auth.config.ts
-import type { NextAuthConfig } from "next-auth";
 import GitHub from "@auth/core/providers/github";
 import Credentials from "next-auth/providers/credentials";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise from "./lib/mongodb";
 import bcrypt from "bcrypt";
-
-import type { Session } from "next-auth";
 import UserModel from "./models/user.model";
+import NextAuth from "next-auth";
 
 declare module "next-auth" {
   interface Session {
@@ -19,8 +14,7 @@ declare module "next-auth" {
   }
 }
 
-export const authConfig: NextAuthConfig = {
-  adapter: MongoDBAdapter(clientPromise),
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     GitHub({
       clientId: process.env.GITHUB_ID!,
@@ -29,29 +23,39 @@ export const authConfig: NextAuthConfig = {
     Credentials({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        identifier: { label: "Identifier", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const user = await UserModel.findOne({ name: credentials.email });
-        if (!user || !user.hashedPassword) return null;
+        try {
+          const identifier = credentials?.identifier as string;
+          const password = credentials?.password as string;
+          const user = await UserModel.findOne({ identifier });
+          if (!user) {
+            throw new Error("No user found for details entered");
+          }
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.hashedPassword
-        );
-        if (!isValid) return null;
+          const isValid = await bcrypt.compare(password, user.password);
+          if (!isValid) {
+            throw new Error("Invalid credentials");
+          }
 
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-        };
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+          };
+        } catch (error) {
+          console.error("Authentication error:", error);
+          return null;
+        }
       },
     }),
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
   },
   pages: {
     signIn: "/login",
@@ -74,4 +78,5 @@ export const authConfig: NextAuthConfig = {
       return session;
     },
   },
-};
+  secret: process.env.AUTH_SECRET,
+});
