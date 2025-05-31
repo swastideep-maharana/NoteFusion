@@ -1,28 +1,41 @@
-import { MongoClient } from "mongodb";
-
-const uri = process.env.MONGODB_URI!;
-const options = {};
-
-let client;
-let clientPromise: Promise<MongoClient>;
+import mongoose from "mongoose";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your Mongo URI to .env.local");
 }
 
-declare global {
-  var _mongoClientPromise: Promise<MongoClient>;
+const MONGODB_URI = process.env.MONGODB_URI;
+
+interface Connection {
+  isConnected?: number;
 }
 
-if (process.env.NODE_ENV === "development") {
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+const connection: Connection = {};
+
+async function dbConnect(): Promise<void> {
+  if (connection.isConnected) {
+    return;
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+
+  try {
+    const db = await mongoose.connect(MONGODB_URI, {
+      dbName: "NoteFusion",
+    });
+
+    connection.isConnected = db.connections[0].readyState;
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("MongoDB connected successfully");
+    }
+  } catch (error) {
+    console.error("MongoDB connection failed:", error);
+    process.exit(1);
+  }
 }
 
-export default clientPromise;
+// For development environment: Handle connection hot reloading
+if (process.env.NODE_ENV === "development") {
+  mongoose.set("debug", true);
+}
+
+export default dbConnect;
