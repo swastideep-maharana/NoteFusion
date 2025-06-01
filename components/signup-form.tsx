@@ -8,27 +8,39 @@ import {
   IconBrandGoogle,
   IconBrandOnlyfans,
 } from "@tabler/icons-react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const signUpSchema = z
+  .object({
+    name: z.string().min(1, "Full Name is required"), // Changed from firstname
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export default function SignupForm() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    firstname: "",
-    email: "",
-    password: "",
-  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const form = useForm({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: "", // Changed from firstname
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setError("");
     setLoading(true);
 
@@ -39,26 +51,33 @@ export default function SignupForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: formData.firstname,
-          email: formData.email,
-          password: formData.password,
+          name: data.name,
+          email: data.email,
+          password: data.password,
         }),
       });
 
-      const data = await response.json();
-
-      if (response.status === 409) {
-        setError("An account with this email or username already exists");
-        return;
-      }
+      const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(responseData.message || "Failed to create account");
       }
 
-      // Redirect to login on success
-      router.push("/auth/signin?success=Account created successfully!");
+      // Sign in the user automatically after successful signup
+      const signInResponse = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (signInResponse?.error) {
+        throw new Error(signInResponse.error);
+      }
+
+      // Redirect to dashboard
+      router.push("/dashboard");
     } catch (err) {
+      console.error("Signup error:", err);
       setError(err instanceof Error ? err.message : "Failed to create account");
     } finally {
       setLoading(false);
@@ -71,7 +90,7 @@ export default function SignupForm() {
         Welcome to NoteFusion
       </h2>
 
-      <form className="my-8" onSubmit={handleSubmit}>
+      <form className="my-8" onSubmit={form.handleSubmit(onSubmit)}>
         {error && (
           <div className="mb-4 p-3 text-sm text-red-500 bg-red-50 rounded-md">
             {error}
@@ -79,14 +98,18 @@ export default function SignupForm() {
         )}
 
         <LabelInputContainer>
-          <Label htmlFor="firstname">Full Name</Label>
+          <Label htmlFor="name">Full Name</Label>
           <Input
-            id="firstname"
+            id="name"
             placeholder="Tyler"
             type="text"
-            value={formData.firstname}
-            onChange={handleChange}
+            {...form.register("name")} // Changed from firstname
           />
+          {form.formState.errors.name && (
+            <span className="text-sm text-red-500">
+              {form.formState.errors.name.message}
+            </span>
+          )}
         </LabelInputContainer>
 
         <LabelInputContainer className="mb-4">
@@ -95,8 +118,7 @@ export default function SignupForm() {
             id="email"
             placeholder="projectmayhem@fc.com"
             type="email"
-            value={formData.email}
-            onChange={handleChange}
+            {...form.register("email")}
           />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
@@ -105,8 +127,16 @@ export default function SignupForm() {
             id="password"
             placeholder="••••••••"
             type="password"
-            value={formData.password}
-            onChange={handleChange}
+            {...form.register("password")}
+          />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
+            id="confirmPassword"
+            placeholder="••••••••"
+            type="password"
+            {...form.register("confirmPassword")}
           />
         </LabelInputContainer>
 
@@ -124,7 +154,7 @@ export default function SignupForm() {
         <div className="flex flex-col space-y-4">
           <button
             className="group/btn shadow-input relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_#262626]"
-            type="submit"
+            type="button"
           >
             <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
             <span className="text-sm text-neutral-700 dark:text-neutral-300">

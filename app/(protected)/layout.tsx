@@ -13,9 +13,5 @@ export default function ProtectedLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className={inter.className}>
-      {children}
-    </div>
-  );
+  return <div className={inter.className}>{children}</div>;
 }
