@@ -1,40 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
-import * as z from "zod";
-
-const signupSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
+import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("Received signup data:", {
-      ...body,
-      password: body.password ? "[REDACTED]" : undefined,
-    });
-
-    // Validate request body
-    const result = signupSchema.safeParse(body);
-
-    if (!result.success) {
+    const { username, email, password } = body.data;
+    if (!username || !email || !password) {
       return NextResponse.json(
-        {
-          message: "Validation failed",
-          errors: result.error.errors,
-        },
+        { success: false, message: "All fields are required", status: 400 },
         { status: 400 }
       );
     }
-
-    const { name, email, password } = result.data;
-
-    // Check for existing user
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
     });
 
     if (existingUser) {
@@ -43,15 +25,15 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    // Hash password and create user
     const hashedPassword = await bcryptjs.hash(password, 12);
-
+    const code = crypto.randomInt(0, 999999).toString().padStart(6, "0");
+    const hashedCode = await bcryptjs.hash(code, 12);
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        username: name,
+        username,
+        verificationCode: hashedCode,
       },
     });
 
