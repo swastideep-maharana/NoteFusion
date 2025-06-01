@@ -50,7 +50,7 @@ export default function DashboardPage() {
       ref={targetRef}
       className="min-h-screen bg-gradient-to-b from-black to-zinc-900"
     >
-      {/* Floating Navigation */}
+     
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -78,7 +78,7 @@ export default function DashboardPage() {
         </motion.button>
       </motion.nav>
 
-      {/* Hero Section */}
+  
       <motion.div
         style={{ scale, y }}
         className="min-h-screen flex items-center justify-center p-4"
@@ -112,7 +112,7 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      {/* Enhanced Features Grid */}
+
       <div className="relative z-10 px-4 pb-32">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           {features.map((feature, i) => (
@@ -124,12 +124,12 @@ export default function DashboardPage() {
               transition={{ delay: i * 0.1 }}
               className="group relative overflow-hidden rounded-3xl bg-zinc-900/50 backdrop-blur-sm p-8 hover:bg-zinc-800/50 border border-zinc-800 transition-all duration-500 shadow-2xl"
             >
-              {/* Gradient Background Hover Effect */}
+          
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
               />
 
-              {/* Icon Container */}
+     
               <div className="relative z-10 flex items-start space-x-4">
                 <div
                   className={`p-3 rounded-2xl bg-gradient-to-br ${feature.color} bg-opacity-10`}
@@ -146,7 +146,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Interactive Elements */}
+           
               <motion.div
                 initial={false}
                 className="mt-6 flex items-center space-x-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
@@ -169,7 +169,7 @@ export default function DashboardPage() {
                 </svg>
               </motion.div>
 
-              {/* Bottom Gradient Line */}
+   
               <div
                 className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${feature.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500`}
               />
