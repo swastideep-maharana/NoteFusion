@@ -6,7 +6,7 @@ import { sendVerificationEmail } from "@/lib/nodemailer/nodemailer";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, email, password } = body.data;
+    const { username, email, password } = body;
     if (!username || !email || !password) {
       return Response.json(
         { success: false, message: "All fields are required", status: 400 },

@@ -75,7 +75,7 @@ export default function SignupForm() {
       }
 
       // Redirect to dashboard
-      router.push("/dashboard");
+      router.replace(`/auth/${responseData.userId}/verify`);
     } catch (err) {
       console.error("Signup error:", err);
       setError(err instanceof Error ? err.message : "Failed to create account");

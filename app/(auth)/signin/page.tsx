@@ -13,10 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signinSchema } from "@/app/schemas/signinSchema";
+
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { signinSchema } from "@/app/schema/signinSchema";
 
 type SignInFormValues = z.infer<typeof signinSchema>;
 
@@ -49,7 +50,10 @@ export default function SignInPage() {
         return;
       }
 
-      router.replace("/dashboard");
+ 
+      const session = await getSession(); 
+      const userId = session?.user?.id;
+      router.replace(`/${userId}/verify`);
     } catch (err) {
       setError("Failed to sign in");
     } finally {

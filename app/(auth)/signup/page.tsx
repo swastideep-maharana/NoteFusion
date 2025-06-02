@@ -9,8 +9,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-
-import { signUpSchema } from "@/app/schemas/signUpSchema";
+import { signUpSchema } from "@/app/schema/signUpSchema";
 
 import {
   Form,
@@ -48,7 +47,7 @@ export default function SignUpPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: data.username,
+          username: data.username,
           email: data.email,
           password: data.password,
         }),
@@ -60,6 +59,8 @@ export default function SignUpPage() {
         throw new Error(responseData.message || "Failed to create account");
       }
 
+      const userId = responseData.userId; // Make sure your API returns userId
+
       const signInResponse = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -70,7 +71,7 @@ export default function SignUpPage() {
         throw new Error(signInResponse.error);
       }
 
-      router.push("/dashboard");
+      router.push(`/${userId}/verify`);
     } catch (err) {
       console.error("Signup error:", err);
       setError(err instanceof Error ? err.message : "Failed to create account");
