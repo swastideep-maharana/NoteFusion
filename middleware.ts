@@ -28,18 +28,11 @@ export async function middleware(request: NextRequest) {
     user?.verified &&
     (url.pathname.startsWith("/signin") ||
       url.pathname.startsWith("/signup") ||
-      url.pathname.includes("/verify") ||
-      url.pathname === "/")
+      url.pathname.includes("/verify"))
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  // if (!session || (!user?.verified && url.pathname.startsWith("/dashboard"))) {
-  //   return NextResponse.redirect(new URL("/signin", request.url));
-  // }
-
-  if (!session && !user?.verified && url.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/signin", request.url));
-  }
+ 
 
   if (session && !user?.verified && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/signin", request.url));
