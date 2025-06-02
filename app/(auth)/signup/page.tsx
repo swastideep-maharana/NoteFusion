@@ -14,7 +14,6 @@ import { signUpSchema } from "@/app/schema/signUpSchema";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -55,11 +54,12 @@ export default function SignUpPage() {
 
       const responseData = await response.json();
 
+
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to create account");
       }
 
-      const userId = responseData.userId; // Make sure your API returns userId
+      const username = responseData.user;
 
       const signInResponse = await signIn("credentials", {
         email: data.email,
@@ -71,7 +71,7 @@ export default function SignUpPage() {
         throw new Error(signInResponse.error);
       }
 
-      router.push(`/${userId}/verify`);
+      router.push(`/${username}/verify`);
     } catch (err) {
       console.error("Signup error:", err);
       setError(err instanceof Error ? err.message : "Failed to create account");

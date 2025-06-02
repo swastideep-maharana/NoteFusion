@@ -55,6 +55,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             id: user.id,
             email: user.email,
             name: user.username,
+            username: user.username,
+            verified: !!user.verified,
+            image: user.userImage ?? null,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -81,9 +84,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!exisitingUser) {
           await prisma.user.create({
             data: {
-              username: user.name,
+              username: user.username,
               email: user.email,
               userImage: user.image,
+              password: "",
             },
           });
         } else {
@@ -97,6 +101,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.verified = user.verified;
       }
       return token;
     },
@@ -105,6 +110,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
+        session.user.verified = Boolean(token.verified);
       }
       return session;
     },

@@ -841,7 +841,7 @@ export namespace Prisma {
     userImage: string | null
     verificationCode: string | null
     verified: boolean | null
-    verificationExipiry: Date | null
+    verificationExpiry: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -854,7 +854,7 @@ export namespace Prisma {
     userImage: string | null
     verificationCode: string | null
     verified: boolean | null
-    verificationExipiry: Date | null
+    verificationExpiry: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -867,7 +867,7 @@ export namespace Prisma {
     userImage: number
     verificationCode: number
     verified: number
-    verificationExipiry: number
+    verificationExpiry: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -882,7 +882,7 @@ export namespace Prisma {
     userImage?: true
     verificationCode?: true
     verified?: true
-    verificationExipiry?: true
+    verificationExpiry?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -895,7 +895,7 @@ export namespace Prisma {
     userImage?: true
     verificationCode?: true
     verified?: true
-    verificationExipiry?: true
+    verificationExpiry?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -908,7 +908,7 @@ export namespace Prisma {
     userImage?: true
     verificationCode?: true
     verified?: true
-    verificationExipiry?: true
+    verificationExpiry?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -990,11 +990,11 @@ export namespace Prisma {
     id: string
     email: string
     password: string
-    username: string | null
+    username: string
     userImage: string | null
     verificationCode: string | null
     verified: boolean
-    verificationExipiry: Date | null
+    verificationExpiry: Date | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1024,7 +1024,7 @@ export namespace Prisma {
     userImage?: boolean
     verificationCode?: boolean
     verified?: boolean
-    verificationExipiry?: boolean
+    verificationExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1039,12 +1039,12 @@ export namespace Prisma {
     userImage?: boolean
     verificationCode?: boolean
     verified?: boolean
-    verificationExipiry?: boolean
+    verificationExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "username" | "userImage" | "verificationCode" | "verified" | "verificationExipiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "username" | "userImage" | "verificationCode" | "verified" | "verificationExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
@@ -1053,11 +1053,11 @@ export namespace Prisma {
       id: string
       email: string
       password: string
-      username: string | null
+      username: string
       userImage: string | null
       verificationCode: string | null
       verified: boolean
-      verificationExipiry: Date | null
+      verificationExpiry: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1459,7 +1459,7 @@ export namespace Prisma {
     readonly userImage: FieldRef<"User", 'String'>
     readonly verificationCode: FieldRef<"User", 'String'>
     readonly verified: FieldRef<"User", 'Boolean'>
-    readonly verificationExipiry: FieldRef<"User", 'DateTime'>
+    readonly verificationExpiry: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -1822,7 +1822,7 @@ export namespace Prisma {
     userImage: 'userImage',
     verificationCode: 'verificationCode',
     verified: 'verified',
-    verificationExipiry: 'verificationExipiry',
+    verificationExpiry: 'verificationExpiry',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -1910,11 +1910,11 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
-    username?: StringNullableFilter<"User"> | string | null
+    username?: StringFilter<"User"> | string
     userImage?: StringNullableFilter<"User"> | string | null
     verificationCode?: StringNullableFilter<"User"> | string | null
     verified?: BoolFilter<"User"> | boolean
-    verificationExipiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    verificationExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }
@@ -1927,7 +1927,7 @@ export namespace Prisma {
     userImage?: SortOrder
     verificationCode?: SortOrder
     verified?: SortOrder
-    verificationExipiry?: SortOrder
+    verificationExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -1935,18 +1935,18 @@ export namespace Prisma {
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     email?: string
+    username?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringFilter<"User"> | string
-    username?: StringNullableFilter<"User"> | string | null
     userImage?: StringNullableFilter<"User"> | string | null
     verificationCode?: StringNullableFilter<"User"> | string | null
     verified?: BoolFilter<"User"> | boolean
-    verificationExipiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    verificationExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-  }, "id" | "email">
+  }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -1956,7 +1956,7 @@ export namespace Prisma {
     userImage?: SortOrder
     verificationCode?: SortOrder
     verified?: SortOrder
-    verificationExipiry?: SortOrder
+    verificationExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -1971,11 +1971,11 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
-    username?: StringNullableWithAggregatesFilter<"User"> | string | null
+    username?: StringWithAggregatesFilter<"User"> | string
     userImage?: StringNullableWithAggregatesFilter<"User"> | string | null
     verificationCode?: StringNullableWithAggregatesFilter<"User"> | string | null
     verified?: BoolWithAggregatesFilter<"User"> | boolean
-    verificationExipiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    verificationExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -1984,11 +1984,11 @@ export namespace Prisma {
     id?: string
     email: string
     password: string
-    username?: string | null
+    username: string
     userImage?: string | null
     verificationCode?: string | null
     verified?: boolean
-    verificationExipiry?: Date | string | null
+    verificationExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -1997,11 +1997,11 @@ export namespace Prisma {
     id?: string
     email: string
     password: string
-    username?: string | null
+    username: string
     userImage?: string | null
     verificationCode?: string | null
     verified?: boolean
-    verificationExipiry?: Date | string | null
+    verificationExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2009,11 +2009,11 @@ export namespace Prisma {
   export type UserUpdateInput = {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    username?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
     userImage?: NullableStringFieldUpdateOperationsInput | string | null
     verificationCode?: NullableStringFieldUpdateOperationsInput | string | null
     verified?: BoolFieldUpdateOperationsInput | boolean
-    verificationExipiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2021,11 +2021,11 @@ export namespace Prisma {
   export type UserUncheckedUpdateInput = {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    username?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
     userImage?: NullableStringFieldUpdateOperationsInput | string | null
     verificationCode?: NullableStringFieldUpdateOperationsInput | string | null
     verified?: BoolFieldUpdateOperationsInput | boolean
-    verificationExipiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2034,11 +2034,11 @@ export namespace Prisma {
     id?: string
     email: string
     password: string
-    username?: string | null
+    username: string
     userImage?: string | null
     verificationCode?: string | null
     verified?: boolean
-    verificationExipiry?: Date | string | null
+    verificationExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2046,11 +2046,11 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    username?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
     userImage?: NullableStringFieldUpdateOperationsInput | string | null
     verificationCode?: NullableStringFieldUpdateOperationsInput | string | null
     verified?: BoolFieldUpdateOperationsInput | boolean
-    verificationExipiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2058,11 +2058,11 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyInput = {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    username?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
     userImage?: NullableStringFieldUpdateOperationsInput | string | null
     verificationCode?: NullableStringFieldUpdateOperationsInput | string | null
     verified?: BoolFieldUpdateOperationsInput | boolean
-    verificationExipiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2134,7 +2134,7 @@ export namespace Prisma {
     userImage?: SortOrder
     verificationCode?: SortOrder
     verified?: SortOrder
-    verificationExipiry?: SortOrder
+    verificationExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -2147,7 +2147,7 @@ export namespace Prisma {
     userImage?: SortOrder
     verificationCode?: SortOrder
     verified?: SortOrder
-    verificationExipiry?: SortOrder
+    verificationExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -2160,7 +2160,7 @@ export namespace Prisma {
     userImage?: SortOrder
     verificationCode?: SortOrder
     verified?: SortOrder
-    verificationExipiry?: SortOrder
+    verificationExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }

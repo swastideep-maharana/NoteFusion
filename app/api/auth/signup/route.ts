@@ -29,20 +29,25 @@ export async function POST(req: Request) {
     const code = crypto.randomInt(0, 999999).toString().padStart(6, "0");
     const hashedCode = await bcryptjs.hash(code, 12);
     const codeExpiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
-    sendVerificationEmail(email, code);
+    sendVerificationEmail(code, email);
     const newUser = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         username,
         verificationCode: hashedCode,
-        verificationExipiry: codeExpiry,
+        verificationExpiry: codeExpiry,
       },
     });
-    console.log(newUser);
+    console.log(newUser, code);
 
     return Response.json(
-      { message: "User created successfully" },
+      {
+        success: true,
+        message: "User created successfully",
+        status: 201,
+        user: newUser.username,
+      },
       { status: 201 }
     );
   } catch (error) {

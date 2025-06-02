@@ -30,10 +30,23 @@ export const POST = async (req: Request) => {
       );
     }
 
-    const isValidCode = await bcrypt.compare(code, user.verificationCode);
+    const isValidCode = await bcrypt.compare(
+      code,
+      user.verificationCode as string
+    );
 
-    if (!isValidCode) {
-      if (user.verificationExpiry < new Date()) {
+    if (isValidCode) {
+      if (user.verified) {
+        return Response.json(
+          {
+            success: false,
+            message: "User is already verified please login",
+            status: 400,
+          },
+          { status: 400 }
+        );
+      }
+      if (user.verificationExpiry! < new Date()) {
         const newCode = crypto.randomInt(0, 999999).toString().padStart(6, "0");
         const hashedCode = await bcrypt.hash(newCode, 12);
 
@@ -56,20 +69,33 @@ export const POST = async (req: Request) => {
           { status: 401 }
         );
       }
+    }
 
+    if (!isValidCode) {
       return Response.json(
         {
           success: false,
           message: "Invalid verification code",
+          status: 401,
         },
         { status: 401 }
       );
     }
 
+    await prisma.user.update({
+      where: { username },
+      data: {
+        verified: true,
+        verificationCode: null,
+        verificationExpiry: null,
+      },
+    });
+
     return Response.json(
       {
         success: true,
         message: "User verified successfully",
+        status: 200,
       },
       { status: 200 }
     );

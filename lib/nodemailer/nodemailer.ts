@@ -63,7 +63,7 @@ export const sendVerificationEmail = (code: string, email: string) => {
           <div class="content">
             <p>Hello,</p>
             <p>Thank you for registering with NoteFusion. To complete your registration, please use the following verification code:</p>
-            <div class="verification-code">${"00000"}</div>
+            <div class="verification-code">${code}</div>
             <p>This code will expire in 10 minutes.</p>
             <p>If you didn't request this verification code, please ignore this email.</p>
           </div>
