@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface VerifyCodePayload {
   username: string;
@@ -26,8 +27,12 @@ export const useSignUp = () => {
     mutationFn: (data: VerifyCodePayload) => postSignUpData(data),
     onSuccess: (data) => {
       if (data.success) {
+        toast.success("User Created Successfully");
         router.push(`${data.user}/verify`);
       }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create user");
     },
   });
 };

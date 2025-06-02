@@ -50,35 +50,7 @@ export default function DashboardPage() {
       ref={targetRef}
       className="min-h-screen bg-gradient-to-b from-black to-zinc-900"
     >
-     
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", ...springConfig }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-4 py-2 rounded-full bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl"
-      >
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-2xl"
-        >
-          ✨
-        </motion.span>
-        <h1 className="text-white font-bold">NoteFusion</h1>
-        <div className="h-4 w-px bg-white/20 mx-2" />
-        <p className="text-white/70">Welcome, {session?.user?.name}</p>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => signOut()}
-          className="ml-2 px-4 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white/90 text-sm font-medium transition-colors"
-        >
-          Sign Out
-        </motion.button>
-      </motion.nav>
-
-  
+      <p className="cursor-pointer" onClick={() => signOut()}>SignOut</p>
       <motion.div
         style={{ scale, y }}
         className="min-h-screen flex items-center justify-center p-4"
@@ -124,12 +96,12 @@ export default function DashboardPage() {
               transition={{ delay: i * 0.1 }}
               className="group relative overflow-hidden rounded-3xl bg-zinc-900/50 backdrop-blur-sm p-8 hover:bg-zinc-800/50 border border-zinc-800 transition-all duration-500 shadow-2xl"
             >
-          
+
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
               />
 
-     
+
               <div className="relative z-10 flex items-start space-x-4">
                 <div
                   className={`p-3 rounded-2xl bg-gradient-to-br ${feature.color} bg-opacity-10`}
@@ -146,7 +118,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-           
+
               <motion.div
                 initial={false}
                 className="mt-6 flex items-center space-x-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
@@ -169,7 +141,7 @@ export default function DashboardPage() {
                 </svg>
               </motion.div>
 
-   
+
               <div
                 className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${feature.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500`}
               />

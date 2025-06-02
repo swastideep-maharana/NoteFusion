@@ -13,17 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import { useMutation } from "@tanstack/react-query";
-import { handleNextAuthSignin } from "./api/api";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { signinSchema } from "@/app/schema/signinSchema";
+import { useSignIn } from "./api/api";
 
 type SignInFormValues = z.infer<typeof signinSchema>;
 
 export default function SignInPage() {
-  const router = useRouter();
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signinSchema),
     defaultValues: {
@@ -32,17 +27,7 @@ export default function SignInPage() {
     },
   });
 
-  const { mutate } = useMutation({
-    mutationFn: handleNextAuthSignin,
-    onSuccess: (data) => {
-      toast.success("Signed in successfully");
-      router.refresh();
-      router.push("/dashboard");
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to sign in");
-    },
-  });
+  const { mutate } = useSignIn();
 
   async function onSubmit(data: SignInFormValues) {
     mutate(data);
