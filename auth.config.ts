@@ -70,6 +70,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "github" || account?.provider === "google") {
+        const exisitingUser = await prisma.user.findUnique({
+          where: {
+            email: user.email,
+          },
+        });
+
+        if (!exisitingUser) {
+          await prisma.user.create({
+            data: {
+              username: user.name,
+              email: user.email,
+              userImage: user.image,
+            },
+          });
+        } else {
+          throw new Error("User already exists");
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
