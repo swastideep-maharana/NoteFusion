@@ -54,7 +54,6 @@ export default function SignUpPage() {
 
       const responseData = await response.json();
 
-
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to create account");
       }
@@ -184,7 +183,12 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="••••••••" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                        className="text-white"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -198,7 +202,12 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="••••••••" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                        className="text-white"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
