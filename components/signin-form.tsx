@@ -10,29 +10,25 @@ import {
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormMessage, FormLabel, FormField, FormItem } from "./ui/form";
 import { z } from "zod";
-import { signUpSchema } from "@/app/schema/signUpSchema";
+import { signinSchema } from "@/app/schema/signinSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignUp } from "@/app/(auth)/signup/api/api"
-import Link from "next/link";
+import { useSignIn } from "@/app/(auth)/signin/api/api"
 import { GithubOAuthButton, GoogleOAuthButton } from "./OAuthbuttons/OauthButtons";
+import Link from "next/link";
 
-export default function SignupForm() {
+export default function SigninForm() {
 
-  const { mutate: singup } = useSignUp()
+  const { mutate: singin } = useSignIn()
 
-  const handleSubmit = (values: z.infer<typeof signUpSchema>) => {
-    singup(values)
+  const handleSubmit = (values: z.infer<typeof signinSchema>) => {
+    singin(values)
   };
 
-
-
-  const form = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<z.infer<typeof signinSchema>>({
+    resolver: zodResolver(signinSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
-      confirmPassword: ""
     }
   })
 
@@ -47,17 +43,6 @@ export default function SignupForm() {
       </p>
       <Form {...form}>
         <form className="my-8" onSubmit={form.handleSubmit(handleSubmit)}>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="username">Username</Label>
-            <FormField control={form.control} name="username" render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input id="username" placeholder="Tyler Durden" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </LabelInputContainer>
           <LabelInputContainer className="mb-4">
             <Label htmlFor="email">Email Address</Label>
             <FormField control={form.control} name="email" render={({ field }) => (
@@ -80,24 +65,12 @@ export default function SignupForm() {
               </FormItem>
             )} />
           </LabelInputContainer>
-          <LabelInputContainer className="mb-8">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <FormField control={form.control} name="confirmPassword" render={({ field }) => (
-              <FormItem>
-
-                <FormControl>
-                  <Input id="confirmPassword" placeholder="••••••••" type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </LabelInputContainer>
 
           <button
             className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
             type="submit"
           >
-            Sign up &rarr;
+            Sign In &rarr;
             <BottomGradient />
           </button>
 
@@ -108,9 +81,9 @@ export default function SignupForm() {
             <GoogleOAuthButton />
           </div>
         </form>
-        <p className="text-sm text-neutral-600 dark:text-neutral-300 text-right">Already have an account? <Link className="underline" href="/signin">Sign In</Link></p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300 text-right">Don&apos;t have an account? <Link className="underline" href="/signup">Sign Up</Link></p>
       </Form>
-    </div>
+    </div >
   );
 }
 

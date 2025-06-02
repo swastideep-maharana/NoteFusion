@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
 import NextAuth from "next-auth";
 import GitHub from "@auth/core/providers/github";
+import Google from "@auth/core/providers/google";
 import Credentials from "next-auth/providers/credentials";
 
 declare module "next-auth" {
@@ -17,8 +18,12 @@ declare module "next-auth" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     GitHub({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: process.env.AUTH_GITHUB_ID!,
+      clientSecret: process.env.AUTH_GITHUB_SECRET!,
+    }),
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     }),
     Credentials({
       name: "Credentials",
@@ -84,14 +89,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!exisitingUser) {
           await prisma.user.create({
             data: {
-              username: user.username,
+              username: user.name as string,
               email: user.email,
               userImage: user.image,
               password: "",
+              verified: true,
             },
           });
-        } else {
-          throw new Error("User already exists");
         }
       }
       return true;
