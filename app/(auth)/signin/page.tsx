@@ -50,8 +50,7 @@ export default function SignInPage() {
         return;
       }
 
- 
-      const session = await getSession(); 
+      const session = await getSession();
       const userId = session?.user?.id;
       router.replace(`/${userId}/verify`);
     } catch (err) {
@@ -91,7 +90,7 @@ export default function SignInPage() {
                         type="email"
                         placeholder="you@example.com"
                         {...field}
-                        className="text-black"
+                        className="text-white"
                       />
                     </FormControl>
                     <FormMessage />
@@ -110,7 +109,7 @@ export default function SignInPage() {
                         type="password"
                         placeholder="••••••••"
                         {...field}
-                        className="text-black"
+                        className="text-white"
                       />
                     </FormControl>
                     <FormMessage />
