@@ -14,18 +14,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useState } from "react";
-import { signIn, getSession } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
+import { handleNextAuthSignin } from "./api/api";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { signinSchema } from "@/app/schema/signinSchema";
 
 type SignInFormValues = z.infer<typeof signinSchema>;
 
 export default function SignInPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signinSchema),
     defaultValues: {
@@ -34,32 +32,21 @@ export default function SignInPage() {
     },
   });
 
+  const { mutate } = useMutation({
+    mutationFn: handleNextAuthSignin,
+    onSuccess: (data) => {
+      toast.success("Signed in successfully");
+      router.refresh();
+      router.push("/dashboard");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to sign in");
+    },
+  });
+
   async function onSubmit(data: SignInFormValues) {
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-
-      if (res?.error) {
-        setError(res.error);
-        return;
-      }
-
-      const session = await getSession();
-      const userId = session?.user?.id;
-      router.replace(`/${userId}/verify`);
-    } catch (err) {
-      setError("Failed to sign in");
-    } finally {
-      setLoading(false);
-    }
+    mutate(data);
   }
-
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -73,12 +60,6 @@ export default function SignInPage() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {error && (
-                <div className="p-3 text-sm text-red-500 bg-red-950/30 rounded-lg border border-red-950">
-                  {error}
-                </div>
-              )}
-
               <FormField
                 control={form.control}
                 name="email"
@@ -120,9 +101,8 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
-                disabled={loading}
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {"Sign in"}
               </Button>
             </form>
           </Form>

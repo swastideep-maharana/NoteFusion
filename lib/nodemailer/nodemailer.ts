@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 
 export const sendVerificationEmail = (code: string, email: string) => {
+  console.log(code, email);
+
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,

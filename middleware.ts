@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   }
  
 
-  if (session && !user?.verified && url.pathname.startsWith("/dashboard")) {
+  if (!session && !user?.verified && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
   return NextResponse.next();

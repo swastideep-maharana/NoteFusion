@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { signUpSchema } from "@/app/schema/signUpSchema";
+import { useSignUp } from './api/api'
 
 import {
   Form,
@@ -22,9 +23,7 @@ import {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
+  const { mutate, isPending } = useSignUp()
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -36,47 +35,7 @@ export default function SignUpPage() {
   });
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    setError("");
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: data.username,
-          email: data.email,
-          password: data.password,
-        }),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to create account");
-      }
-
-      const username = responseData.user;
-
-      const signInResponse = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-
-      if (signInResponse?.error) {
-        throw new Error(signInResponse.error);
-      }
-
-      router.push(`/${username}/verify`);
-    } catch (err) {
-      console.error("Signup error:", err);
-      setError(err instanceof Error ? err.message : "Failed to create account");
-    } finally {
-      setLoading(false);
-    }
+    mutate(data);
   };
 
   return (
@@ -218,10 +177,10 @@ export default function SignUpPage() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 type="submit"
-                disabled={loading}
+                disabled={isPending}
                 className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-zinc-900 transition-all disabled:opacity-50"
               >
-                {loading ? "Creating account..." : "Sign up"}
+                {isPending ? "Creating account..." : "Sign up"}
               </motion.button>
 
               <div className="relative my-6">
