@@ -33,9 +33,16 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  if (!session || (!user?.verified && url.pathname.startsWith("/dashboard"))) {
+  // if (!session || (!user?.verified && url.pathname.startsWith("/dashboard"))) {
+  //   return NextResponse.redirect(new URL("/signin", request.url));
+  // }
+
+  if (!session && !user?.verified && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 
+  if (session && !user?.verified && url.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/signin", request.url));
+  }
   return NextResponse.next();
 }
